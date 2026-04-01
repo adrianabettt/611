@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 5 — Repetição: Fazendo a Mesma Coisa Várias Vezes</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0f4f8;min-height:100vh;padding:20px}
+.header{background:#6B21A8;border-radius:12px;padding:20px 24px;margin-bottom:20px;color:#fff}
+.header-tag{font-size:12px;color:#D8B4FE;font-weight:700;letter-spacing:.08em;margin-bottom:6px}
+.header-title{font-size:22px;font-weight:700;margin-bottom:4px}
+.header-sub{font-size:13px;color:#D8B4FE}
+.score-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.score-card{background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid #e2e8f0}
+.score-val{font-size:26px;font-weight:700;color:#6B21A8}
+.score-lbl{font-size:11px;color:#64748b;margin-top:2px}
+.progress-wrap{background:#e2e8f0;border-radius:2px;height:4px;margin-bottom:20px}
+.progress-fill{height:4px;background:#6B21A8;border-radius:2px;transition:width .4s}
+.card-aula{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:16px;border:1px solid #e2e8f0}
+.ativ-num{font-size:11px;font-weight:700;color:#64748b;letter-spacing:.06em;margin-bottom:6px}
+.ativ-enun{font-size:14px;color:#1a1a1a;line-height:1.6;margin-bottom:14px}
+.feedback{padding:8px 12px;border-radius:8px;font-size:13px;margin-top:10px;display:none}
+.ok{background:#DCFCE7;color:#0E5E45}
+.err{background:#FCEBEB;color:#A32D2D}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#1a1a1a;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;margin-right:8px}
+.btn:hover{background:#f1f5f9}
+.btn-finalizar{background:#6B21A8;color:#fff;border-color:#6B21A8;font-size:15px;padding:12px 28px;width:100%;justify-content:center;margin-top:0}
+.btn-finalizar:hover{background:#7C3AED}
+.btn-finalizar:disabled{background:#94a3b8;border-color:#94a3b8;cursor:not-allowed}
+label{font-size:12px;color:#555;display:block;margin-bottom:4px;margin-top:10px}
+input[type=text],select,textarea{width:100%;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#1a1a1a}
+textarea{resize:vertical;min-height:80px}
+input:focus,select:focus,textarea:focus{outline:2px solid #6B21A8;border-color:#6B21A8}
+.sel-ok{border-color:#16A34A!important;background:#f0fdf4!important}
+.sel-err{border-color:#A32D2D!important;background:#fff5f5!important}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.conceito-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-bottom:6px;background:#6B21A8;color:#fff}
+.conceito-desc{font-size:12px;color:#444;line-height:1.5}
+.caixa-codigo{background:#1e1e2e;border-radius:10px;padding:14px;font-family:monospace;font-size:13px;color:#cdd6f4;line-height:1.8;margin-bottom:14px;white-space:pre}
+.kw{color:#cba6f7}.fn{color:#89dceb}.str{color:#a6e3a1}.num{color:#fab387}.cm{color:#6c7086}
+
+/* ── Nota final ── */
+.nota-box{background:#fff;border-radius:16px;padding:28px 32px;border:2px solid #6B21A8;text-align:center;display:none}
+.nota-circulo{width:110px;height:110px;border-radius:50%;margin:0 auto 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:5px solid #6B21A8}
+.nota-num{font-size:38px;font-weight:700;line-height:1}
+.nota-dez{font-size:14px;color:#64748b;margin-top:2px}
+.nota-titulo{font-size:20px;font-weight:700;margin-bottom:6px}
+.nota-msg{font-size:14px;color:#555;line-height:1.6;margin-bottom:20px}
+.nota-detalhe{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.detalhe-card{background:#f8fafc;border-radius:10px;padding:12px;border:1px solid #e2e8f0}
+.detalhe-val{font-size:20px;font-weight:700;color:#6B21A8}
+.detalhe-lbl{font-size:11px;color:#64748b;margin-top:2px}
+.barra-ativ{margin-bottom:8px}
+.barra-lbl{display:flex;justify-content:space-between;font-size:12px;color:#555;margin-bottom:4px}
+.barra-bg{background:#e2e8f0;border-radius:4px;height:10px}
+.barra-fill{height:10px;border-radius:4px;background:#6B21A8;transition:width .6s}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">AULA 5 · EF06CO02 · 11/03/2026 · 35 min</div>
+  <div class="header-title">Repetição: Fazendo a Mesma Coisa Várias Vezes</div>
+  <div class="header-sub">6º Ano — Computação — 1º Trimestre 2026 — Laços de repetição</div>
+</div>
+
+<div class="score-row">
+  <div class="score-card"><div class="score-val" id="acertos">0</div><div class="score-lbl">acertos</div></div>
+  <div class="score-card"><div class="score-val" id="tentativas">0</div><div class="score-lbl">tentativas</div></div>
+  <div class="score-card"><div class="score-val" id="pct">0%</div><div class="score-lbl">aproveitamento</div></div>
+</div>
+<div class="progress-wrap"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+<!-- Conceitos -->
+<div class="grid2" style="margin-bottom:20px">
+  <div class="card-aula" style="margin-bottom:0">
+    <span class="conceito-tag">Repita N vezes</span>
+    <div class="caixa-codigo"><span class="kw">repita</span> <span class="num">5</span> <span class="kw">vezes</span>:
+  <span class="fn">exibir</span>(<span class="str">"Olá!"</span>)</div>
+    <div class="conceito-desc">Executa exatamente N vezes. Use quando você sabe quantas repetições quer.</div>
+  </div>
+  <div class="card-aula" style="margin-bottom:0">
+    <span class="conceito-tag">Repita até que</span>
+    <div class="caixa-codigo"><span class="kw">repita até que</span> resposta = <span class="str">"sim"</span>:
+  resposta = <span class="fn">perguntar</span>(<span class="str">"Parar?"</span>)</div>
+    <div class="conceito-desc">Executa enquanto a condição for falsa. Use quando não sabe quantas vezes.</div>
+  </div>
+</div>
+
+<!-- ── ATIVIDADE 1 ── -->
+<div class="card-aula" id="card-a1">
+  <div class="ativ-num">ATIVIDADE 1 de 3 — Qual laço usar?</div>
+  <div class="ativ-enun">Para cada situação abaixo, escolha o tipo de laço mais adequado. Selecione todas antes de verificar.</div>
+  <div id="q5_1_wrap"></div>
+  <button class="btn" style="margin-top:14px" onclick="checkA1()">Verificar respostas</button>
+  <div class="feedback" id="fb1"></div>
+</div>
+
+<!-- ── ATIVIDADE 2 ── -->
+<div class="card-aula" id="card-a2">
+  <div class="ativ-num">ATIVIDADE 2 de 3 — Simulador de laço</div>
+  <div class="ativ-enun">O programa abaixo cria a tabuada do 3. Use os botões para executar e observe o que acontece a cada repetição. Execute o laço completo para registrar sua participação.</div>
+  <div class="caixa-codigo"><span class="kw">repita</span> <span class="num">10</span> <span class="kw">vezes</span> <span class="cm">(i de 1 a 10)</span>:
+  <span class="fn">exibir</span>(<span class="str">"3 × "</span> + i + <span class="str">" = "</span> + (<span class="num">3</span> * i))</div>
+  <div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn" onclick="stepA2()">Próximo passo</button>
+    <button class="btn" onclick="runA2()">Executar tudo</button>
+    <button class="btn" onclick="resetA2()">Reiniciar</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px">CÓDIGO EM EXECUÇÃO</div>
+      <div style="background:#1e1e2e;border-radius:10px;padding:14px;font-family:monospace;font-size:13px;color:#cdd6f4;line-height:2">
+        <div id="sim-linha1" style="border-left:3px solid transparent;padding-left:8px;transition:border-color .3s"><span class="kw">repita</span> <span class="num">10</span> <span class="kw">vezes</span> <span class="cm">(i = <span id="sim-i">0</span>)</span>:</div>
+        <div id="sim-linha2" style="border-left:3px solid transparent;padding-left:24px;transition:border-color .3s"><span class="fn">exibir</span>(<span class="str">"3 × "</span> + i + <span class="str">" = "</span> + resultado)</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:6px">SAÍDA DO PROGRAMA</div>
+      <div style="background:#1e1e2e;border-radius:10px;padding:14px;font-family:monospace;font-size:13px;color:#cdd6f4;min-height:120px;max-height:220px;overflow-y:auto" id="out2"></div>
+    </div>
+  </div>
+  <div class="feedback" id="fb2"></div>
+</div>
+
+<!-- ── ATIVIDADE 3 ── -->
+<div class="card-aula" id="card-a3">
+  <div class="ativ-num">ATIVIDADE 3 de 3 — Projete seu laço</div>
+  <div class="ativ-enun">Imagine um programa que use repetição. Preencha todos os campos descrevendo como ele funcionaria.</div>
+  <div class="grid2">
+    <div>
+      <label>O que seu programa faz:</label>
+      <input type="text" id="a3-desc" placeholder="Ex.: Mostra a tabuada de um número">
+      <label>Tipo de laço:</label>
+      <select id="a3-tipo">
+        <option value="">— selecione —</option>
+        <option value="N">Repita N vezes</option>
+        <option value="ate">Repita até que</option>
+      </select>
+      <label>Quantas repetições (ou condição de parada):</label>
+      <input type="text" id="a3-n" placeholder="Ex.: 10 vezes  /  até resposta = 'sair'">
+    </div>
+    <div>
+      <label>O que acontece dentro do laço:</label>
+      <textarea id="a3-dentro" placeholder="Ex.: Exibe o resultado de 3 × i"></textarea>
+      <label>Resultado esperado ao final:</label>
+      <input type="text" id="a3-res" placeholder="Ex.: 10 linhas com a tabuada completa">
+    </div>
+  </div>
+  <button class="btn" style="margin-top:14px" onclick="checkA3()">Registrar programa</button>
+  <div class="feedback" id="fb3"></div>
+</div>
+
+<!-- ── NOTA FINAL ── -->
+<div class="card-aula" id="card-final">
+  <div style="text-align:center;margin-bottom:16px">
+    <div style="font-size:12px;font-weight:700;color:#64748b;letter-spacing:.06em;margin-bottom:4px">QUANDO TERMINAR TODAS AS ATIVIDADES</div>
+    <div style="font-size:14px;color:#555">Complete as 3 atividades acima para liberar a nota final.</div>
+  </div>
+  <button class="btn-finalizar btn" id="btn-finalizar" onclick="calcNota()" disabled>
+    Calcular minha nota
+  </button>
+</div>
+
+<!-- ── RESULTADO ── -->
+<div class="nota-box" id="nota-box">
+  <div class="nota-circulo" id="nota-circulo">
+    <div class="nota-num" id="nota-num">—</div>
+    <div class="nota-dez">de 10</div>
+  </div>
+  <div class="nota-titulo" id="nota-titulo"></div>
+  <div class="nota-msg" id="nota-msg"></div>
+
+  <div class="nota-detalhe">
+    <div class="detalhe-card"><div class="detalhe-val" id="nd-acertos">0</div><div class="detalhe-lbl">acertos totais</div></div>
+    <div class="detalhe-card"><div class="detalhe-val" id="nd-total">0</div><div class="detalhe-lbl">questões avaliadas</div></div>
+    <div class="detalhe-card"><div class="detalhe-val" id="nd-pct">0%</div><div class="detalhe-lbl">aproveitamento</div></div>
+  </div>
+
+  <div style="text-align:left;margin-bottom:20px">
+    <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:10px">DESEMPENHO POR ATIVIDADE</div>
+    <div class="barra-ativ">
+      <div class="barra-lbl"><span>Atividade 1 — Qual laço usar?</span><span id="barra1-lbl"></span></div>
+      <div class="barra-bg"><div class="barra-fill" id="barra1" style="width:0%"></div></div>
+    </div>
+    <div class="barra-ativ">
+      <div class="barra-lbl"><span>Atividade 2 — Simulador</span><span id="barra2-lbl"></span></div>
+      <div class="barra-bg"><div class="barra-fill" id="barra2" style="width:0%"></div></div>
+    </div>
+    <div class="barra-ativ">
+      <div class="barra-lbl"><span>Atividade 3 — Projeto do laço</span><span id="barra3-lbl"></span></div>
+      <div class="barra-bg"><div class="barra-fill" id="barra3" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <button class="btn" style="margin-right:0;width:100%;justify-content:center" onclick="window.print()">Imprimir / Salvar resultado</button>
+</div>
+
+<script>
+// ── Estado global ──────────────────────────────────────────────
+var acertos = 0, tentativas = 0;
+var a1Acertos = 0, a1Total = 0, a1Feita = false;
+var a2Feita  = false;
+var a3Feita  = false;
+
+function updScore(a, t) {
+  acertos += a; tentativas += t;
+  document.getElementById('acertos').textContent = acertos;
+  document.getElementById('tentativas').textContent = tentativas;
+  var p = tentativas > 0 ? Math.round(acertos / tentativas * 100) : 0;
+  document.getElementById('pct').textContent = p + '%';
+  document.getElementById('prog').style.width = p + '%';
+  verificarLiberacao();
+}
+
+function fb(id, ok, msg) {
+  var el = document.getElementById(id);
+  el.style.display = 'block';
+  el.className = 'feedback ' + (ok ? 'ok' : 'err');
+  el.textContent = msg;
+}
+
+function verificarLiberacao() {
+  var btn = document.getElementById('btn-finalizar');
+  if (a1Feita && a2Feita && a3Feita) {
+    btn.disabled = false;
+    btn.textContent = 'Calcular minha nota ✓';
+  }
+}
+
+// ── ATIVIDADE 1 ────────────────────────────────────────────────
+var sits = [
+  { txt: 'Exibir "Bom dia!" 7 vezes na tela', correto: 'N' },
+  { txt: 'Continuar pedindo senha até o usuário acertar', correto: 'ate' },
+  { txt: 'Mostrar os números de 1 a 100', correto: 'N' },
+  { txt: 'Perguntar se quer jogar novamente até dizer "não"', correto: 'ate' },
+  { txt: 'Piscar uma luz 20 vezes', correto: 'N' },
+];
+
+(function () {
+  var w = document.getElementById('q5_1_wrap');
+  sits.forEach(function (s, i) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 12px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0';
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'flex:1;font-size:13px;color:#1a1a1a';
+    lbl.textContent = s.txt;
+    var sel = document.createElement('select');
+    sel.id = 'qs' + i;
+    sel.style.cssText = 'width:200px;font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid #cbd5e1;flex-shrink:0';
+    sel.innerHTML = '<option value="">— selecione —</option><option value="N">Repita N vezes</option><option value="ate">Repita até que</option>';
+    row.appendChild(lbl);
+    row.appendChild(sel);
+    w.appendChild(row);
+  });
+})();
+
+function checkA1() {
+  var naoRespondidos = sits.filter(function (s, i) {
+    return document.getElementById('qs' + i).value === '';
+  }).length;
+  if (naoRespondidos > 0) {
+    fb('fb1', false, 'Selecione o tipo de laço para todas as ' + sits.length + ' situações antes de verificar!');
+    return;
+  }
+  var c = 0;
+  sits.forEach(function (s, i) {
+    var el = document.getElementById('qs' + i);
+    var ok = el.value === s.correto;
+    if (ok) c++;
+    el.className = ok ? 'sel-ok' : 'sel-err';
+    el.disabled = true;
+  });
+  a1Acertos = c; a1Total = sits.length; a1Feita = true;
+  updScore(c, sits.length);
+  fb('fb1', c === sits.length,
+    c + ' de ' + sits.length + ' corretos.' +
+    (c < sits.length
+      ? ' Dica: use "Repita N vezes" quando sabe a quantidade; "Repita até que" quando depende de uma condição.'
+      : ' Perfeito! Você sabe exatamente quando usar cada tipo de laço!'));
+}
+
+// ── ATIVIDADE 2 ────────────────────────────────────────────────
+var step2 = 0, t2 = null, a2Pontos = 0;
+
+function atualizarDestaque(ativo) {
+  document.getElementById('sim-linha1').style.borderLeftColor = ativo === 1 ? '#cba6f7' : 'transparent';
+  document.getElementById('sim-linha2').style.borderLeftColor = ativo === 2 ? '#a6e3a1' : 'transparent';
+}
+
+function out2Line() {
+  if (step2 >= 10) {
+    atualizarDestaque(0);
+    if (!a2Feita) {
+      a2Feita = true; a2Pontos = 1;
+      updScore(1, 1);
+      fb('fb2', true, 'Laço concluído! O programa repetiu 10 vezes — i foi de 1 a 10, e a cada passo calculou 3 × i. Isso é um laço "Repita N vezes"!');
+    }
+    return;
+  }
+  step2++;
+  document.getElementById('sim-i').textContent = step2;
+  atualizarDestaque(2);
+  var out = document.getElementById('out2');
+  var linha = document.createElement('div');
+  linha.style.cssText = 'color:#a6e3a1;animation:fadeIn .2s';
+  linha.textContent = '3 × ' + step2 + ' = ' + (3 * step2);
+  out.appendChild(linha);
+  out.scrollTop = out.scrollHeight;
+  setTimeout(function () { atualizarDestaque(1); }, 200);
+}
+
+function stepA2() { out2Line(); }
+
+function runA2() {
+  resetA2();
+  atualizarDestaque(1);
+  t2 = setInterval(function () {
+    out2Line();
+    if (step2 >= 10) clearInterval(t2);
+  }, 350);
+}
+
+function resetA2() {
+  clearInterval(t2);
+  step2 = 0;
+  document.getElementById('out2').innerHTML = '';
+  document.getElementById('sim-i').textContent = '0';
+  document.getElementById('fb2').style.display = 'none';
+  atualizarDestaque(0);
+}
+
+// ── ATIVIDADE 3 ────────────────────────────────────────────────
+var a3Pontos = 0;
+
+function checkA3() {
+  var d    = document.getElementById('a3-desc').value.trim();
+  var tp   = document.getElementById('a3-tipo').value;
+  var n    = document.getElementById('a3-n').value.trim();
+  var den  = document.getElementById('a3-dentro').value.trim();
+  var res  = document.getElementById('a3-res').value.trim();
+
+  var vazios = [d, tp, n, den, res].filter(function (v) { return v === ''; }).length;
+  if (vazios > 0) {
+    fb('fb3', false, 'Preencha todos os ' + [d,tp,n,den,res].filter(function(v){return v===''}).length + ' campo(s) antes de registrar!');
+    return;
+  }
+
+  // Pontuação: 1 ponto por campo bem preenchido (mínimo de 15 caracteres para textos longos)
+  var pts = 0;
+  if (d.length >= 10) pts++;
+  if (tp !== '') pts++;
+  if (n.length >= 3) pts++;
+  if (den.length >= 10) pts++;
+  if (res.length >= 10) pts++;
+
+  a3Pontos = pts; a3Feita = true;
+  updScore(pts, 5);
+
+  fb('fb3', pts >= 4,
+    pts === 5 ? 'Ótimo planejamento! Seu laço do tipo "' + (tp === 'N' ? 'Repita N vezes' : 'Repita até que') + '" está bem descrito. Parabéns!'
+    : pts >= 3 ? 'Bom! Mas enriqueça um pouco mais as descrições para ficar mais preciso.'
+    : 'Tente detalhar mais cada campo — um bom algoritmo precisa de descrições claras!');
+}
+
+// ── NOTA FINAL ─────────────────────────────────────────────────
+function calcNota() {
+  if (!a1Feita || !a2Feita || !a3Feita) {
+    alert('Complete as 3 atividades antes de calcular a nota!');
+    return;
+  }
+
+  // Pesos: A1 = 4pts (5 questões → escala), A2 = 3pts (simulador), A3 = 3pts (criação)
+  var nota_a1  = Math.round((a1Acertos / a1Total) * 4 * 10) / 10;  // 0–4
+  var nota_a2  = a2Feita ? 3 : 0;                                   // 0–3
+  var nota_a3  = Math.round((a3Pontos / 5) * 3 * 10) / 10;          // 0–3
+  var total    = Math.round((nota_a1 + nota_a2 + nota_a3) * 10) / 10;
+  var notaFinal = Math.min(10, Math.max(0, total));
+
+  // Preencher UI
+  document.getElementById('nota-num').textContent = notaFinal.toFixed(1);
+  document.getElementById('nd-acertos').textContent = acertos;
+  document.getElementById('nd-total').textContent = tentativas;
+  document.getElementById('nd-pct').textContent = tentativas > 0 ? Math.round(acertos / tentativas * 100) + '%' : '0%';
+
+  // Barras por atividade
+  var pct1 = Math.round((a1Acertos / a1Total) * 100);
+  var pct2 = a2Feita ? 100 : 0;
+  var pct3 = Math.round((a3Pontos / 5) * 100);
+  document.getElementById('barra1').style.width = pct1 + '%';
+  document.getElementById('barra2').style.width = pct2 + '%';
+  document.getElementById('barra3').style.width = pct3 + '%';
+  document.getElementById('barra1-lbl').textContent = a1Acertos + '/' + a1Total + ' corretos (' + pct1 + '%)';
+  document.getElementById('barra2-lbl').textContent = a2Feita ? 'Concluído ✓' : 'Não concluído';
+  document.getElementById('barra3-lbl').textContent = a3Pontos + '/5 pontos (' + pct3 + '%)';
+
+  // Cor e mensagem por faixa
+  var cor, titulo, msg;
+  if (notaFinal >= 9) {
+    cor = '#0E5E45'; titulo = 'Excelente! 🎉';
+    msg = 'Você dominou os laços de repetição! Sabe escolher entre "Repita N vezes" e "Repita até que" e consegue planejar um programa com repetição com clareza.';
+  } else if (notaFinal >= 7) {
+    cor = '#1F3864'; titulo = 'Muito bom! 👍';
+    msg = 'Você compreendeu bem os laços de repetição. Revise os pontos em vermelho da Atividade 1 para consolidar o conceito.';
+  } else if (notaFinal >= 5) {
+    cor = '#92400E'; titulo = 'Bom progresso! 📚';
+    msg = 'Você está no caminho certo! Revise a diferença entre "Repita N vezes" e "Repita até que" e tente detalhar mais seus algoritmos.';
+  } else {
+    cor = '#881337'; titulo = 'Continue praticando! 💪';
+    msg = 'Os laços de repetição precisam de mais atenção. Releia os exemplos no topo da página e tente as atividades novamente.';
+  }
+
+  var circ = document.getElementById('nota-circulo');
+  circ.style.borderColor = cor;
+  document.getElementById('nota-num').style.color = cor;
+  document.getElementById('nota-titulo').textContent = titulo;
+  document.getElementById('nota-titulo').style.color = cor;
+  document.getElementById('nota-msg').textContent = msg;
+
+  // Exibir
+  document.getElementById('nota-box').style.display = 'block';
+  document.getElementById('nota-box').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('card-final').style.display = 'none';
+}
+</script>
+</body>
+</html>
